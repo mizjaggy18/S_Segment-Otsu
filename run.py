@@ -130,13 +130,25 @@ def main(argv):
                 delta=cj.parameters.threshold_constant
             )
 
-            kernel = np.ones((5, 5), np.uint8)
-            eroded_img = cv2.erode(thresholded_img, kernel, iterations=cj.parameters.erode_iterations)
-            dilated_img = cv2.dilate(eroded_img, kernel, iterations=cj.parameters.dilate_iterations)
+            # kernel = np.ones((5, 5), np.uint8)
+            kernel_size = np.array(32)
+            kernel_size = tuple(np.round(kernel_size).astype(int))
+            # Create structuring element for morphological operations
+            kernel = cv2.getStructuringElement(cv2.MORPH_ELLIPSE, kernel_size)
+            min_region_size = np.sum(kernel)
+            _, output, stats, _ = cv2.connectedComponentsWithStats(mask, connectivity=8)
+            sizes = stats[1:, -1]
+            for i, size in enumerate(sizes):
+                if size < min_region_size:
+                    mask[output == i + 1] = 0
 
+            mask = cv2.morphologyEx(mask, cv2.MORPH_DILATE, kernel)
+            # eroded_img = cv2.erode(thresholded_img, kernel, iterations=cj.parameters.erode_iterations)
+            # dilated_img = cv2.dilate(eroded_img, kernel, iterations=cj.parameters.dilate_iterations)
+  
             extension = 10
             extended_img = cv2.copyMakeBorder(
-                dilated_img,
+                mask,
                 extension,
                 extension,
                 extension,
