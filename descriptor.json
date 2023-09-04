@@ -1,9 +1,9 @@
 {
-  "name": "Segment-CV-AdaptThres-Sample",
+  "name": "Segment-Otsu",
   "description": "Detect samples in images using an adaptive threshold.",
   "schema-version": "cytomine-0.1",
   "container-image": {
-    "image": "cytomine/s_segment-cv-adaptthres-sample",
+    "image": "mizjaggy18/s_segment-otsu",
     "index": "docker://",
     "type": "singularity"
     },
