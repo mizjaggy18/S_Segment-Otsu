@@ -138,7 +138,7 @@ def main(argv):
             # Create structuring element for morphological operations
             kernel = cv2.getStructuringElement(cv2.MORPH_ELLIPSE, kernel_size)
             min_region_size = np.sum(kernel)
-            _, output, stats, _ = cv2.connectedComponentsWithStats(mask, connectivity=8)
+            _, output, stats, _ = cv2.connectedComponentsWithStats(thresholded_img, connectivity=8)
             sizes = stats[1:, -1]
             for i, size in enumerate(sizes):
                 if size < min_region_size:
