@@ -132,6 +132,8 @@ def main(argv):
 
             # kernel = np.ones((5, 5), np.uint8)
             kernel_size = np.array(32)
+            if kernel_size.size != 2:  # noqa: PLR2004
+              kernel_size = kernel_size.repeat(2)
             kernel_size = tuple(np.round(kernel_size).astype(int))
             # Create structuring element for morphological operations
             kernel = cv2.getStructuringElement(cv2.MORPH_ELLIPSE, kernel_size)
