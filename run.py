@@ -111,28 +111,33 @@ def main(argv):
                 image.dump(dest_pattern=download_path, max_size=max(resized_width, resized_height), bits=bit_depth)
                 # extract image and mask (if any)
                 img = cv2.imread(image.filename, cv2.IMREAD_GRAYSCALE)
-                unchanged = cv2.imread(image.filename, cv2.IMREAD_UNCHANGED)
-                mask = np.ones(img.shape, dtype=bool)
-                if unchanged.ndim == 3 and unchanged.shape[-1] in {2, 4}:  # has a mask
-                    mask = unchanged[:, :, -1].squeeze().astype(bool)
+                # unchanged = cv2.imread(image.filename, cv2.IMREAD_UNCHANGED)
+                # mask = np.ones(img.shape, dtype=bool)
+                # if unchanged.ndim == 3 and unchanged.shape[-1] in {2, 4}:  # has a mask
+                #     mask = unchanged[:, :, -1].squeeze().astype(bool)
 
-            block_size = cj.parameters.threshold_blocksize
-            if block_size % 2 == 0:
-                logging.warning(
-                    "The threshold block size must be an odd number! "
-                    "It will be incremented by one."
-                )
-                block_size += 1
+            pixels = np.array(im).flatten()
+            # print(max(pixels))
+            threshold = threshold_otsu(pixels) + 50
+            # print(threshold)
+            mask = (im < threshold).astype(np.uint8)
+            # block_size = cj.parameters.threshold_blocksize
+            # if block_size % 2 == 0:
+            #     logging.warning(
+            #         "The threshold block size must be an odd number! "
+            #         "It will be incremented by one."
+            #     )
+            #     block_size += 1
             
-            thresholded_img = localThresholdWithMask(
-                img, mask, 
-                block_size=block_size, 
-                delta=cj.parameters.threshold_constant
-            )
+            # thresholded_img = localThresholdWithMask(
+            #     img, mask, 
+            #     block_size=block_size, 
+            #     delta=cj.parameters.threshold_constant
+            # )
 
-            mask = thresholded_img
+            # mask = thresholded_img
             # kernel = np.ones((5, 5), np.uint8)
-            kernel_size = np.array(32)
+            kernel_size = np.array(cj.parameters.threshold_blocksize)
             if kernel_size.size != 2:  # noqa: PLR2004
               kernel_size = kernel_size.repeat(2)
             kernel_size = tuple(np.round(kernel_size).astype(int))
