@@ -13,7 +13,7 @@ FROM cytomine/software-python3-base:v2.2.0
 #     git checkout v2.2.0 && \
 #     python setup.py build && \
 #     python setup.py install
-RUN sudo apt-get install libncurses5-dev
+RUN apt-get install libncurses5-dev
 RUN pip install gnureadline==6.3.3
 COPY requirements.txt /tmp/
 RUN pip install -r /tmp/requirements.txt
