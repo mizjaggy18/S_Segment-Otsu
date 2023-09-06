@@ -112,10 +112,10 @@ def main(argv):
                 download_path = os.path.join(tmpdir, "{id}.png")
                 image.dump(dest_pattern=download_path, max_size=max(resized_width, resized_height), bits=bit_depth)
                 # extract image and mask (if any)
-                img = cv2.imread(image.filename, cv2.IMREAD_GRAYSCALE)
-                # img = cv2.imread(download_path, cv2.IMREAD_GRAYSCALE)
+                # img = cv2.imread(image.filename, cv2.IMREAD_GRAYSCALE)
+                img = cv2.imread(download_path, cv2.IMREAD_GRAYSCALE)
               
-                unchanged = cv2.imread(image.filename, cv2.IMREAD_UNCHANGED)
+                unchanged = cv2.imread(download_path, cv2.IMREAD_UNCHANGED)
                 mask = np.ones(img.shape, dtype=bool)
                 if unchanged.ndim == 3 and unchanged.shape[-1] in {2, 4}:  # has a mask
                     mask = unchanged[:, :, -1].squeeze().astype(bool)
