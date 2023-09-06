@@ -31,6 +31,7 @@ from cytomine.utilities.software import parse_domain_list
 from shapely.geometry import Polygon
 from sldc.locator import mask_to_objects_2d
 from shapely.affinity import affine_transform
+from skimage.filters import threshold_otsu
 
 __author__ = "Rubens Ulysse <urubens@uliege.be>"
 __contributors__ = ["Marée Raphaël <raphael.maree@uliege.be>", "Stévens Benjamin", "Romain Mormont <romain.mormont@cytomine.com>"]
