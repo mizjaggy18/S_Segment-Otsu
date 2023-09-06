@@ -60,6 +60,7 @@ def localThresholdWithMask(image, mask, block_size=11, delta=0):
     The thresholded mask
   """
   image[np.logical_not(mask)] = 0
+  
   kernel1d = cv2.getGaussianKernel(block_size, sigma=-1)
   kernel2d = np.matmul(kernel1d, kernel1d.transpose())
   
@@ -112,16 +113,21 @@ def main(argv):
                 image.dump(dest_pattern=download_path, max_size=max(resized_width, resized_height), bits=bit_depth)
                 # extract image and mask (if any)
                 img = cv2.imread(image.filename, cv2.IMREAD_GRAYSCALE)
-                # unchanged = cv2.imread(image.filename, cv2.IMREAD_UNCHANGED)
-                # mask = np.ones(img.shape, dtype=bool)
-                # if unchanged.ndim == 3 and unchanged.shape[-1] in {2, 4}:  # has a mask
-                #     mask = unchanged[:, :, -1].squeeze().astype(bool)
+                # img = cv2.imread(download_path, cv2.IMREAD_GRAYSCALE)
+              
+                unchanged = cv2.imread(image.filename, cv2.IMREAD_UNCHANGED)
+                mask = np.ones(img.shape, dtype=bool)
+                if unchanged.ndim == 3 and unchanged.shape[-1] in {2, 4}:  # has a mask
+                    mask = unchanged[:, :, -1].squeeze().astype(bool)
 
+            img[np.logical_not(mask)] = 0          
             pixels = np.array(img).flatten()
-            # print(max(pixels))
+            print(max(pixels))
             threshold = threshold_otsu(pixels) + cj.parameters.threshold_constant
-            # print(threshold)
-            mask = (img < threshold).astype(np.uint8)
+            print(threshold)
+            thresh_mask = (img > threshold).astype(np.uint8)*255
+            thresh_mask[np.logical_not(mask)] = 255
+            
             # block_size = cj.parameters.threshold_blocksize
             # if block_size % 2 == 0:
             #     logging.warning(
@@ -136,7 +142,7 @@ def main(argv):
             #     delta=cj.parameters.threshold_constant
             # )
 
-            # mask = thresholded_img
+            mask = thresh_mask
             # kernel = np.ones((5, 5), np.uint8)
             kernel_size = np.array(cj.parameters.threshold_blocksize)
             if kernel_size.size != 2:  # noqa: PLR2004
