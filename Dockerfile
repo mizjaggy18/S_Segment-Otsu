@@ -16,6 +16,7 @@ FROM cytomine/software-python3-base:v2.2.0
 
 COPY requirements.txt /tmp/
 RUN pip install -r /tmp/requirements.txt
+RUN pip install scikit-image
 
 COPY run.py /app/run.py
 
