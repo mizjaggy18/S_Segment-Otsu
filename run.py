@@ -116,11 +116,11 @@ def main(argv):
                 # if unchanged.ndim == 3 and unchanged.shape[-1] in {2, 4}:  # has a mask
                 #     mask = unchanged[:, :, -1].squeeze().astype(bool)
 
-            pixels = np.array(im).flatten()
+            pixels = np.array(img).flatten()
             # print(max(pixels))
-            threshold = threshold_otsu(pixels) + 50
+            threshold = threshold_otsu(pixels) + cj.parameters.threshold_constant
             # print(threshold)
-            mask = (im < threshold).astype(np.uint8)
+            mask = (img < threshold).astype(np.uint8)
             # block_size = cj.parameters.threshold_blocksize
             # if block_size % 2 == 0:
             #     logging.warning(
