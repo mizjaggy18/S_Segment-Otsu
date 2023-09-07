@@ -33,9 +33,7 @@ from sldc.locator import mask_to_objects_2d
 from shapely.affinity import affine_transform
 from skimage.filters import threshold_otsu
 
-__author__ = "Rubens Ulysse <urubens@uliege.be>"
-__contributors__ = ["Marée Raphaël <raphael.maree@uliege.be>", "Stévens Benjamin", "Romain Mormont <romain.mormont@cytomine.com>"]
-__copyright__ = "Copyright 2010-2022 University of Liège, Belgium, https://uliege.cytomine.org/"
+__author__ = "WSHMunirah WAhmad <wshmunirah@gmail.com>"
 
 
 
@@ -149,7 +147,7 @@ def main(argv):
             pixels = np.array(im_resized).flatten()
             # print(max(pixels))
             threshold = threshold_otsu(pixels) + cj.parameters.threshold_blocksize
-            print(threshold)
+            # print(threshold)
             thresh_mask = (img < threshold).astype(np.uint8)*255
             # thresh_mask[np.logical_not(mask)] = 255
             kernel_size = np.array(cj.parameters.threshold_constant)
@@ -159,19 +157,20 @@ def main(argv):
             # Create structuring element for morphological operations
             kernel = cv2.getStructuringElement(cv2.MORPH_ELLIPSE, kernel_size)
             min_region_size = np.sum(kernel)
-            _, output, stats, _ = cv2.connectedComponentsWithStats(mask, connectivity=8)
+            _, output, stats, _ = cv2.connectedComponentsWithStats(thresh_mask, connectivity=8)
             sizes = stats[1:, -1]
             for i, size in enumerate(sizes):
                 if size < min_region_size:
-                    mask[output == i + 1] = 0
+                    thresh_mask[output == i + 1] = 0
 
-            mask = cv2.morphologyEx(mask, cv2.MORPH_DILATE, kernel)
+            thresh_mask = cv2.morphologyEx(thresh_mask, cv2.MORPH_DILATE, kernel)
+            thresh_mask = cv2.bitwise_not(thresh_mask)
             # eroded_img = cv2.erode(thresholded_img, kernel, iterations=cj.parameters.erode_iterations)
             # dilated_img = cv2.dilate(eroded_img, kernel, iterations=cj.parameters.dilate_iterations)
   
             extension = 10
             extended_img = cv2.copyMakeBorder(
-                mask,
+                thresh_mask,
                 extension,
                 extension,
                 extension,
