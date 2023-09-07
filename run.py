@@ -39,51 +39,51 @@ __copyright__ = "Copyright 2010-2022 University of Liège, Belgium, https://ulie
 
 
 
-def localThresholdWithMask(image, mask, block_size=11, delta=0):
-  """Approximate cv2.adaptiveThreshold with a Gaussian filter but with a binary mask excluding areas of the image.
-  These areas should not be considered for computing the thresholds.
+# def localThresholdWithMask(image, mask, block_size=11, delta=0):
+#   """Approximate cv2.adaptiveThreshold with a Gaussian filter but with a binary mask excluding areas of the image.
+#   These areas should not be considered for computing the thresholds.
   
-  Parameters
-  ----------
-  image: ndarray
-    The image to threshold
-  mask: ndarray
-    The image mask (only `True` pixels should be considered)
-  block_size: int
-    The size of the neighbourhood for threshold evaluation
-  delta: float
-    Constant subtracted from the mean or weighted mean.
+#   Parameters
+#   ----------
+#   image: ndarray
+#     The image to threshold
+#   mask: ndarray
+#     The image mask (only `True` pixels should be considered)
+#   block_size: int
+#     The size of the neighbourhood for threshold evaluation
+#   delta: float
+#     Constant subtracted from the mean or weighted mean.
 
-  Returns
-  -------
-  thresh_mask: ndarray
-    The thresholded mask
-  """
-  image[np.logical_not(mask)] = 0
+#   Returns
+#   -------
+#   thresh_mask: ndarray
+#     The thresholded mask
+#   """
+#   image[np.logical_not(mask)] = 0
   
-  kernel1d = cv2.getGaussianKernel(block_size, sigma=-1)
-  kernel2d = np.matmul(kernel1d, kernel1d.transpose())
+#   kernel1d = cv2.getGaussianKernel(block_size, sigma=-1)
+#   kernel2d = np.matmul(kernel1d, kernel1d.transpose())
   
-  # compute gaussian thresholds with a mask
-  sums = cv2.filter2D(
-    image.astype(float), 
-    ddepth=-1, 
-    kernel=kernel2d, 
-    borderType=cv2.BORDER_ISOLATED|cv2.BORDER_REPLICATE
-  )
-  divs = cv2.filter2D(
-    mask.astype(float), 
-    ddepth=-1, 
-    kernel=kernel2d, 
-    borderType=cv2.BORDER_ISOLATED|cv2.BORDER_REPLICATE
-  )
-  masked_means = sums / divs
+#   # compute gaussian thresholds with a mask
+#   sums = cv2.filter2D(
+#     image.astype(float), 
+#     ddepth=-1, 
+#     kernel=kernel2d, 
+#     borderType=cv2.BORDER_ISOLATED|cv2.BORDER_REPLICATE
+#   )
+#   divs = cv2.filter2D(
+#     mask.astype(float), 
+#     ddepth=-1, 
+#     kernel=kernel2d, 
+#     borderType=cv2.BORDER_ISOLATED|cv2.BORDER_REPLICATE
+#   )
+#   masked_means = sums / divs
 
-  # rectify with delta and remove masked pixels 
-  thresholds = masked_means - delta
-  thresh_mask = (image > thresholds).astype(np.uint8) * 255
-  thresh_mask[np.logical_not(mask)] = 255
-  return thresh_mask
+#   # rectify with delta and remove masked pixels 
+#   thresholds = masked_means - delta
+#   thresh_mask = (image > thresholds).astype(np.uint8) * 255
+#   thresh_mask[np.logical_not(mask)] = 255
+#   return thresh_mask
 
 
 def main(argv):
@@ -120,31 +120,39 @@ def main(argv):
                 if unchanged.ndim == 3 and unchanged.shape[-1] in {2, 4}:  # has a mask
                     mask = unchanged[:, :, -1].squeeze().astype(bool)
 
-            # img[np.logical_not(mask)] = 0          
-            # pixels = np.array(img).flatten()
-            # print(max(pixels))
-            # threshold = threshold_otsu(pixels) + cj.parameters.threshold_constant
-            # print(threshold)
-            # thresh_mask = (img > threshold).astype(np.uint8)*255
-            # thresh_mask[np.logical_not(mask)] = 255
             
-            block_size = cj.parameters.threshold_blocksize
-            if block_size % 2 == 0:
-                logging.warning(
-                    "The threshold block size must be an odd number! "
-                    "It will be incremented by one."
-                )
-                block_size += 1
             
-            thresholded_img = localThresholdWithMask(
-                img, mask, 
-                block_size=block_size, 
-                delta=cj.parameters.threshold_constant
-            )
+            # block_size = cj.parameters.threshold_blocksize
+            # if block_size % 2 == 0:
+            #     logging.warning(
+            #         "The threshold block size must be an odd number! "
+            #         "It will be incremented by one."
+            #     )
+            #     block_size += 1
+            
+            # thresholded_img = localThresholdWithMask(
+            #     img, mask, 
+            #     block_size=block_size, 
+            #     delta=cj.parameters.threshold_constant
+            # )
 
-            mask = thresholded_img
+            # mask = thresholded_img
             # kernel = np.ones((5, 5), np.uint8)
-            kernel_size = np.array(cj.parameters.threshold_blocksize)
+            scale_percent = 1 # percent of original size
+            width = int(img.shape[1] * scale_percent / 100)
+            height = int(img.shape[0] * scale_percent / 100)
+            dim = (width, height)
+              
+            # resize image
+            im_resized = cv2.resize(img, dim, interpolation = cv2.INTER_AREA)
+            # img[np.logical_not(mask)] = 0          
+            pixels = np.array(im_resized).flatten()
+            # print(max(pixels))
+            threshold = threshold_otsu(pixels) + cj.parameters.threshold_blocksize
+            print(threshold)
+            thresh_mask = (img < threshold).astype(np.uint8)*255
+            # thresh_mask[np.logical_not(mask)] = 255
+            kernel_size = np.array(cj.parameters.threshold_constant)
             if kernel_size.size != 2:  # noqa: PLR2004
               kernel_size = kernel_size.repeat(2)
             kernel_size = tuple(np.round(kernel_size).astype(int))
