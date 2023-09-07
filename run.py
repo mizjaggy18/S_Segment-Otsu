@@ -112,13 +112,12 @@ def main(argv):
                 # extract image and mask (if any)
                 img = cv2.imread(image.filename, cv2.IMREAD_GRAYSCALE)
                 # img = cv2.imread(download_path, cv2.IMREAD_GRAYSCALE)
-              
-                unchanged = cv2.imread(image.filename, cv2.IMREAD_UNCHANGED)
-                mask = np.ones(img.shape, dtype=bool)
-                if unchanged.ndim == 3 and unchanged.shape[-1] in {2, 4}:  # has a mask
-                    mask = unchanged[:, :, -1].squeeze().astype(bool)
-
-            
+                print("pass line 115")
+                # unchanged = cv2.imread(image.filename, cv2.IMREAD_UNCHANGED)
+                
+                # mask = np.ones(img.shape, dtype=bool)
+                # if unchanged.ndim == 3 and unchanged.shape[-1] in {2, 4}:  # has a mask
+                #     mask = unchanged[:, :, -1].squeeze().astype(bool)
             
             # block_size = cj.parameters.threshold_blocksize
             # if block_size % 2 == 0:
@@ -143,28 +142,41 @@ def main(argv):
               
             # resize image
             im_resized = cv2.resize(img, dim, interpolation = cv2.INTER_AREA)
+            print("pass line 145")
             # img[np.logical_not(mask)] = 0          
             pixels = np.array(im_resized).flatten()
+            print("pass line 148")
             # print(max(pixels))
             threshold = threshold_otsu(pixels) + cj.parameters.threshold_blocksize
+            print("pass line 151")
             # print(threshold)
             thresh_mask = (img < threshold).astype(np.uint8)*255
+            print("pass line 154")
             # thresh_mask[np.logical_not(mask)] = 255
             kernel_size = np.array(cj.parameters.threshold_constant)
+            print("pass line 157")
             if kernel_size.size != 2:  # noqa: PLR2004
               kernel_size = kernel_size.repeat(2)
+            print("pass line 160")
             kernel_size = tuple(np.round(kernel_size).astype(int))
+            print("pass line 162")
             # Create structuring element for morphological operations
             kernel = cv2.getStructuringElement(cv2.MORPH_ELLIPSE, kernel_size)
+            print("pass line 165")
             min_region_size = np.sum(kernel)
+            print("pass line 167")
             _, output, stats, _ = cv2.connectedComponentsWithStats(thresh_mask, connectivity=8)
+            print("pass line 169")
             sizes = stats[1:, -1]
             for i, size in enumerate(sizes):
                 if size < min_region_size:
                     thresh_mask[output == i + 1] = 0
+            print("pass line 174")
 
             thresh_mask = cv2.morphologyEx(thresh_mask, cv2.MORPH_DILATE, kernel)
+            print("pass line 177")
             thresh_mask = cv2.bitwise_not(thresh_mask)
+            print("pass line 179")
             # eroded_img = cv2.erode(thresholded_img, kernel, iterations=cj.parameters.erode_iterations)
             # dilated_img = cv2.dilate(eroded_img, kernel, iterations=cj.parameters.dilate_iterations)
   
@@ -178,7 +190,7 @@ def main(argv):
                 cv2.BORDER_CONSTANT,
                 value=2 ** bit_depth
             )
-
+            print("pass line 193")
             # extract foreground polygons 
             fg_objects = mask_to_objects_2d(extended_img, background=255, offset=(-extension, -extension))
             zoom_factor = image.width / float(resized_width)
