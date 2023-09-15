@@ -117,25 +117,9 @@ def main(argv):
                 
                 # mask = np.ones(img.shape, dtype=bool)
                 # if unchanged.ndim == 3 and unchanged.shape[-1] in {2, 4}:  # has a mask
-                #     mask = unchanged[:, :, -1].squeeze().astype(bool)
-            
-            # block_size = cj.parameters.threshold_blocksize
-            # if block_size % 2 == 0:
-            #     logging.warning(
-            #         "The threshold block size must be an odd number! "
-            #         "It will be incremented by one."
-            #     )
-            #     block_size += 1
-            
-            # thresholded_img = localThresholdWithMask(
-            #     img, mask, 
-            #     block_size=block_size, 
-            #     delta=cj.parameters.threshold_constant
-            # )
+                #     mask = unchanged[:, :, -1].squeeze().astype(bool)          
 
-            # mask = thresholded_img
-            # kernel = np.ones((5, 5), np.uint8)
-            scale_percent = 1 # percent of original size
+            scale_percent = cj.parameters.scale_percent # percent of original size
             width = int(img.shape[1] * scale_percent / 100)
             height = int(img.shape[0] * scale_percent / 100)
             dim = (width, height)
@@ -147,13 +131,13 @@ def main(argv):
             pixels = np.array(im_resized).flatten()
             print("pass line 148")
             # print(max(pixels))
-            threshold = threshold_otsu(pixels) + cj.parameters.threshold_blocksize
+            threshold = threshold_otsu(pixels) + cj.parameters.threshold_allowance
             print("pass line 151")
             # print(threshold)
             thresh_mask = (img < threshold).astype(np.uint8)*255
             print("pass line 154")
             # thresh_mask[np.logical_not(mask)] = 255
-            kernel_size = np.array(cj.parameters.threshold_constant)
+            kernel_size = np.array(cj.parameters.kernel_size)
             print("pass line 157")
             if kernel_size.size != 2:  # noqa: PLR2004
               kernel_size = kernel_size.repeat(2)
@@ -220,7 +204,3 @@ if __name__ == "__main__":
     import sys
 
     main(sys.argv[1:])
-
-
-# docker run -v $(pwd)/data:/images --entrypoint /bin/bash --rm -it segment-cv-adaptthres-sample:dev.rm.v0.0.13
-# python run.py --host https://dev-apps.cytom.in --public_key "074f2cd2-4d3d-4724-b7d4-94e8ea7d183b" --private_key "3542cac5-e928-4e84-a581-022cff2d59d7" --id_project 818 --id_software 32170  --cytomine_id_images 71851 --cytomine_id_predicted_term 884 --max_image_size 2048  --threshold_blocksize 951 --threshold_constant 5 --erode_iterations 3 --dilate_iterations 3 --image_area_perc_threshold 5
