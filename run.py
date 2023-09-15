@@ -75,7 +75,10 @@ def main(argv):
             # resize image
             im_resized = cv2.resize(img, dim, interpolation = cv2.INTER_AREA)
             pixels = np.array(im_resized).flatten()
-            threshold = threshold_otsu(pixels) + cj.parameters.threshold_allowance
+            th_value = threshold_otsu(pixels)
+            print("Otsu threshold: ", th_value)
+            threshold = th_value + cj.parameters.threshold_allowance
+            print("Otsu threshold + allowance: ", threshold)
             thresh_mask = (img < threshold).astype(np.uint8)*255
           
             kernel_size = np.array(cj.parameters.kernel_size)
@@ -94,9 +97,7 @@ def main(argv):
 
             thresh_mask = cv2.morphologyEx(thresh_mask, cv2.MORPH_DILATE, kernel)
             thresh_mask = cv2.bitwise_not(thresh_mask)
-            # eroded_img = cv2.erode(thresholded_img, kernel, iterations=cj.parameters.erode_iterations)
-            # dilated_img = cv2.dilate(eroded_img, kernel, iterations=cj.parameters.dilate_iterations)
-  
+ 
             extension = 10
             extended_img = cv2.copyMakeBorder(
                 thresh_mask,
