@@ -109,7 +109,7 @@ def main(argv):
             with TemporaryDirectory() as tmpdir:
                 download_path = os.path.join(tmpdir, "{id}.png")
                 image.dump(dest_pattern=download_path, max_size=max(resized_width, resized_height), bits=bit_depth)
-                # extract image and mask (if any)
+                print("pass line 112")
                 img = cv2.imread(image.filename, cv2.IMREAD_GRAYSCALE)
                 # img = cv2.imread(download_path, cv2.IMREAD_GRAYSCALE)
                 print("pass line 115")
