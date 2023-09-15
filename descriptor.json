@@ -7,7 +7,7 @@
     "index": "docker://",
     "type": "singularity"
     },
-  "command-line": "python run.py [CYTOMINE_HOST] [CYTOMINE_PUBLIC_KEY] [CYTOMINE_PRIVATE_KEY] [CYTOMINE_ID_PROJECT] [CYTOMINE_ID_SOFTWARE] [LOG_LEVEL] [CYTOMINE_ID_IMAGES] [CYTOMINE_ID_PREDICTED_TERM] [MAX_IMAGE_SIZE] [THRESHOLD_CONSTANT] [THRESHOLD_BLOCKSIZE] [ERODE_ITERATIONS] [DILATE_ITERATIONS] [IMAGE_AREA_PERC_THRESHOLD]",
+  "command-line": "python run.py [CYTOMINE_HOST] [CYTOMINE_PUBLIC_KEY] [CYTOMINE_PRIVATE_KEY] [CYTOMINE_ID_PROJECT] [CYTOMINE_ID_SOFTWARE] [LOG_LEVEL] [CYTOMINE_ID_IMAGES] [CYTOMINE_ID_PREDICTED_TERM] [MAX_IMAGE_SIZE] [KERNEL_SIZE] [THRESHOLD_ALLOWANCE] [IMAGE_AREA_PERC_THRESHOLD]",
   "inputs": [
     {
       "id": "cytomine_host",
@@ -90,44 +90,24 @@
       "default-value": "2048"
     },
     {
-      "id": "threshold_blocksize",
+      "id": "threshold_allowance",
       "value-key": "[@ID]",
       "command-line-flag": "--@id",
-      "name": "Threshold block size",
-      "description": "Size of a pixel neighborhood that is used to calculate a threshold value for the pixel",
+      "name": "Threshold allowance",
+      "description": "A value to add / minus to the obtained Otsu threshold value",
       "optional": false,
       "type": "Number",
-      "default-value": "951"
+      "default-value": "50"
     },
     {
-      "id": "threshold_constant",
+      "id": "kernel_size",
       "value-key": "[@ID]",
       "command-line-flag": "--@id",
-      "name": "Threshold constant",
-      "description": "Constant C used in the computation of threshold value T(x,y) which is the weighted sum of the blockSize * blockSize neighborhood of (x,y) - C",
+      "name": "Kernel size",
+      "description": "Kernel size for morphological operations",
       "optional": false,
       "type": "Number",
       "default-value": "5"
-    },
-    {
-      "id": "erode_iterations",
-      "value-key": "[@ID]",
-      "command-line-flag": "--@id",
-      "name": "Number of erosions",
-      "optional": false,
-      "type": "Number",
-      "integer": true,
-      "default-value": "3"
-    },
-    {
-      "id": "dilate_iterations",
-      "value-key": "[@ID]",
-      "command-line-flag": "--@id",
-      "name": "Number of dilations",
-      "optional": false,
-      "type": "Number",
-      "integer": true,
-      "default-value": "3"
     },
     {
       "id": "image_area_perc_threshold",
@@ -140,7 +120,7 @@
       "integer": true,
       "minimum": 0,
       "maximum": 100,
-      "default-value": "5"
+      "default-value": "0.01"
     },
     {
       "id": "log_level",
