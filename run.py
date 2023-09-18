@@ -119,17 +119,20 @@ def main(argv):
             transform_matrix = [zoom_factor, 0, 0, -zoom_factor, 0, image.height]
             annotations = AnnotationCollection()
             for i, (fg_poly, _) in enumerate(fg_objects):
-                upscaled = affine_transform(fg_poly, transform_matrix)
-                if upscaled.area <= min_area:
-                    continue
-                annotations.append(Annotation(
-                    location=upscaled.wkt,
-                    id_image=image.id,
-                    id_terms=[cj.parameters.cytomine_id_predicted_term],
-                    id_project=cj.parameters.cytomine_id_project
-                ))
-
-            annotations.save()
+                try:
+                        upscaled = affine_transform(fg_poly, transform_matrix)
+                        if upscaled.area <= min_area:
+                            continue
+                        annotations.append(Annotation(
+                            location=upscaled.wkt,
+                            id_image=image.id,
+                            id_terms=[cj.parameters.cytomine_id_predicted_term],
+                            id_project=cj.parameters.cytomine_id_project
+                        ))
+    
+                    annotations.save()
+                except:
+                    print("An exception occurred. Proceed with next annotations")
 
         cj.job.update(statusComment="Finished.")
 
