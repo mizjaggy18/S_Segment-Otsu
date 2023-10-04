@@ -1,6 +1,6 @@
 {
   "name": "Segment-Otsu",
-  "description": "Detect samples in images using an adaptive threshold.",
+  "description": "Segment tissue in WSIs using an Otsu threshold.",
   "schema-version": "cytomine-0.1",
   "container-image": {
     "image": "mizjaggy18/s_segment-otsu",
@@ -87,7 +87,7 @@
       "optional": false,
       "type": "Number",
       "integer": true,
-      "default-value": "2048"
+      "default-value": "5000"
     },
     {
       "id": "threshold_allowance",
@@ -97,7 +97,7 @@
       "description": "A value to add / minus to the obtained Otsu threshold value",
       "optional": false,
       "type": "Number",
-      "default-value": "50"
+      "default-value": "100"
     },
     {
       "id": "kernel_size",
@@ -107,7 +107,7 @@
       "description": "Kernel size for morphological operations",
       "optional": false,
       "type": "Number",
-      "default-value": "5"
+      "default-value": "3"
     },
     {
       "id": "image_area_perc_threshold",
@@ -120,7 +120,7 @@
       "integer": true,
       "minimum": 0,
       "maximum": 100,
-      "default-value": "0.01"
+      "default-value": "0.0001"
     },
     {
       "id": "scale_percent",
@@ -133,7 +133,7 @@
       "integer": true,
       "minimum": 0,
       "maximum": 100,
-      "default-value": "5"
+      "default-value": "1"
     },
     {
       "id": "log_level",
