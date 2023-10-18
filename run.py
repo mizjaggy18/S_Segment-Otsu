@@ -61,11 +61,6 @@ def main(argv):
                 download_path = os.path.join(tmpdir, "{id}.png")
                 image.dump(dest_pattern=download_path, max_size=max(resized_width, resized_height), bits=bit_depth)
                 img = cv2.imread(image.filename, cv2.IMREAD_GRAYSCALE)
-                # img = cv2.imread(download_path, cv2.IMREAD_GRAYSCALE)
-                # unchanged = cv2.imread(image.filename, cv2.IMREAD_UNCHANGED)                
-                # mask = np.ones(img.shape, dtype=bool)
-                # if unchanged.ndim == 3 and unchanged.shape[-1] in {2, 4}:  # has a mask
-                #     mask = unchanged[:, :, -1].squeeze().astype(bool)          
 
             dim = (resized_width, resized_height)    
             im_resized = cv2.resize(img, dim, interpolation = cv2.INTER_AREA)
@@ -123,8 +118,8 @@ def main(argv):
                     Annotation(
                     location=upscaled.wkt,
                     id_image=image.id,
-                    id_terms=[params.id_term],
-                    id_project=params.id_project).save()                    
+                    id_terms=[cj.parameters.cytomine_id_predicted_term],
+                    id_project=cj.parameters.cytomine_id_project).save()                    
                 except:
                     print("An exception occurred. Proceed with next annotations")
 
