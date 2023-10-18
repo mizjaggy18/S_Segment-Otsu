@@ -67,12 +67,7 @@ def main(argv):
                 # if unchanged.ndim == 3 and unchanged.shape[-1] in {2, 4}:  # has a mask
                 #     mask = unchanged[:, :, -1].squeeze().astype(bool)          
 
-            scale_percent = cj.parameters.scale_percent # percent of original size
-            width = int(img.shape[1] * scale_percent / 100)
-            height = int(img.shape[0] * scale_percent / 100)
-            dim = (width, height)
-              
-            # resize image
+            dim = (resized_width, resized_height)    
             im_resized = cv2.resize(img, dim, interpolation = cv2.INTER_AREA)
             pixels = np.array(im_resized).flatten()
             th_value = threshold_otsu(pixels)
@@ -120,7 +115,7 @@ def main(argv):
             annotations = AnnotationCollection()
             for i, (fg_poly, _) in enumerate(fg_objects):
                 upscaled = affine_transform(fg_poly, transform_matrix)
-                if upscaled.area <= min_area or upscaled.area > max_area:
+                if upscaled.area <= min_area:
                     continue
                 # print(upscaled.area)
                 try:
