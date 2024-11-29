@@ -85,8 +85,8 @@ def main(argv):
                 if size < min_region_size:
                     thresh_mask[output == i + 1] = 0
 
-            thresh_mask = cv2.morphologyEx(thresh_mask, cv2.MORPH_DILATE, kernel)
-            thresh_mask = cv2.bitwise_not(thresh_mask)
+            thresh_mask = cv2.morphologyEx(thresh_mask, cv2.MORPH_OPEN, kernel)
+            thresh_mask = cv2.bitwise_not(thresh_mask)            
  
             extension = 10
             extended_img = cv2.copyMakeBorder(
@@ -96,8 +96,15 @@ def main(argv):
                 extension,
                 extension,
                 cv2.BORDER_CONSTANT,
-                value=2 ** bit_depth
+                value=255  # Use the same as the background value
             )
+
+            h, w = thresh_mask.shape
+            edges = np.zeros_like(thresh_mask)
+            edges[0, :] = edges[-1, :] = edges[:, 0] = edges[:, -1] = 1
+            
+            mask_edges = cv2.bitwise_and(thresh_mask, edges)
+            thresh_mask[mask_edges > 0] = 0
 
             # extract foreground polygons 
             fg_objects = mask_to_objects_2d(extended_img, background=255, offset=(-extension, -extension))
